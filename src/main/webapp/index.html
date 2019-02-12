@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>zkViewer</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
+    <script type="text/javascript" src="easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
+    <script type="text/javascript">
+        var host = '';
+        var port = '';
+        $(function () {
+            port = $.cookie('port');
+            if(!port) {
+                port = 2181
+            }
+            $('#server').form('load', {host:$.cookie('host'), port:port});
+            $('#nodes').tree({
+                onBeforeLoad: function(node, param) {
+                    param.host = host;
+                    param.port = port;
+                },
+                onClick: function(node){
+                    $.post("nodeDetails",{id:node.id, host:host,port:port},function(rlt){
+                        $('#nodeData').form('load', {data:rlt.data});
+                        $('#metadata').form('load', rlt.metaData);
+
+                        var html = '';
+                        var acls = rlt.acls;
+                        for(var i = 0;i < acls.length;i++) {
+                            var acl = acls[i];
+                            html += '<tr>' +
+                                '<td>Schema:</td>' +
+                                '<td><input class="easyui-textbox" type="text" value="' + acl.schema + '"></input></td>' +
+                                '</tr>';
+                            html += '<tr>' +
+                                '<td>ID:</td>' +
+                                '<td><input class="easyui-textbox" type="text" value="' + acl.id + '"></input></td>' +
+                                '</tr>';
+                            html += '<tr>' +
+                                '<td>Permissions:</td>' +
+                                '<td><input class="easyui-textbox" type="text" value="' + acl.permissions + '"></input></td>' +
+                                '</tr>';
+                            $('#aclsTab').html(html);
+                            $.parser.parse($('#aclsTab'));
+                        }
+                    },"json");
+                }
+            });
+
+            connect();
+        });
+
+        function connect() {
+            host = $('#host').val();
+            port = $('#ports').val();
+            $.cookie('host', host, {expires: 365});
+            $.cookie('port', port, {expires: 365});
+            $.post("connect",{host:host, port: port},function(rlt) {
+                if('ok' == rlt) {
+                    $('#nodes').tree("reload");
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div id="all" class="easyui-layout" style="width:100%;height:600px;">
+    <div id="northPanel" data-options="region:'north',collapsible:false" title="Server" style="height:100px;">
+        <form id="server" style="height: 100%;width: 100%">
+            <table width="100%" style="height: 100%" valign="middle">
+                <tr>
+                    <td width="18%">
+                    </td>
+                    <td width="82%" style="text-align: left;" valign="middle">
+                        Server: &nbsp;<input class="easyui-textbox" type="text" name="host" id="host" style="width: 250px;"></input>
+                        &nbsp;
+                        Port: &nbsp;<input class="easyui-textbox" type="text" name="port" id="ports" value="2181" style="width: 60px;"></input>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="connect()" style="margin-left: 30px">Connect</a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div id="westPanel" data-options="region:'west',split:true" title="Nodes" style="width:22%;height: 500px">
+        <ul id="nodes" class="easyui-tree" url="nodes">
+        </ul>
+    </div>
+    <div id="eastPanel" data-options="region:'east',split:false" title="Details" style="width:78%;height: 500px">
+        <div class="easyui-tabs" style="width:100%;height:500px">
+            <div title="Node Data" style="padding:10px">
+                <form id="nodeData">
+                    <input class="easyui-textbox" name="data" data-options="multiline:true" style="height:410px;width: 100%"></input>
+                </form>
+            </div>
+            <div title="Node Metadata" style="padding:10px">
+                <form id="metadata">
+                    <table cellpadding="2">
+                        <tr>
+                            <td>ACL Version:</td>
+                            <td><input class="easyui-textbox" type="text" name="aclVersion" editable="false"></input></td>
+                        </tr>
+                        <tr>
+                            <td>Creation Time:</td>
+                            <td><input class="easyui-textbox" type="text" name="createTime" editable="false"></input></td>
+                        </tr>
+                        <tr>
+                            <td>Children Version:</td>
+                            <td><input class="easyui-textbox" type="text" name="childrenVersion" editable="false"></input></td>
+                        </tr>
+                        <tr>
+                            <td>Creation ID:</td>
+                            <td><input class="easyui-textbox" type="text" name="creationId" editable="false"></input></td>
+                        </tr>
+                        <tr>
+                            <td>Data Length:</td>
+                            <td><input class="easyui-textbox" type="text" name="dataLength" editable="false"></input></td>
+                        </tr>
+                        <tr>
+                            <td>Ephemeral Owner:</td>
+                            <td><input class="easyui-textbox" type="text" name="ephemeralOwner" editable="false"></input></td>
+                        </tr>
+                        <tr>
+                            <td>Last Modify Time:</td>
+                            <td><input class="easyui-textbox" type="text" name="lastModifyTime" editable="false"></input></td>
+                        </tr>
+                        <tr>
+                            <td>Modified ID:</td>
+                            <td><input class="easyui-textbox" type="text" name="modifyId" editable="false"></input></td>
+                        </tr>
+                        <tr>
+                            <td>Number Of Children:</td>
+                            <td><input class="easyui-textbox" type="text" name="numOfChildren" editable="false"></input></td>
+                        </tr>
+                        <tr>
+                            <td>Node ID:</td>
+                            <td><input class="easyui-textbox" type="text" name="nodeId" editable="false"></input></td>
+                        </tr>
+                        <tr>
+                            <td>Data Version:</td>
+                            <td><input class="easyui-textbox" type="text" name="dataVersion" editable="false"></input></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div title="Node ACLs" style="padding:10px">
+                <table cellpadding="2" id="aclsTab">
+                    <tr>
+                        <td>Schema:</td>
+                        <td><input class="easyui-textbox" type="text" editable="false"></input></td>
+                    </tr>
+                    <tr>
+                        <td>ID:</td>
+                        <td><input class="easyui-textbox" type="text" editable="false"></input></td>
+                    </tr>
+                    <tr>
+                        <td>Permissions:</td>
+                        <td><input class="easyui-textbox" type="text" editable="false"></input></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="text-align: center">
+    <a href="https://gitee.com/skyz/zk-viewer" target="_blank">https://gitee.com/skyz/zk-viewer</a>&nbsp;/&nbsp;<a href="https://github.com/skyzzzzzzz/zk-viewer" target="_blank">https://github.com/skyzzzzzzz/zk-viewer</a>
+</div>
+</body>
+</html>
