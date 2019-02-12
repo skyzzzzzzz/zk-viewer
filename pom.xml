@@ -5,8 +5,8 @@
 
     <groupId>com.osc.skyz</groupId>
     <artifactId>zk-viewer</artifactId>
-    <packaging>war</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <version>1.0</version>
     <name>zk-viewer Maven Webapp</name>
 
     <properties>
@@ -78,7 +78,7 @@
                         <descriptors>
                             <descriptor>src/main/build/assembly.xml</descriptor>
                         </descriptors>
-                        <finalName>zk-viewer</finalName>
+                        <finalName>zk-viewer-${version}</finalName>
                         <appendAssemblyId>false</appendAssemblyId>
                         <archive>
                             <manifest>
