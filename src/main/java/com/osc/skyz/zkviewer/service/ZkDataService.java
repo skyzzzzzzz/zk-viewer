@@ -25,20 +25,21 @@ public class ZkDataService {
 
     private static ConcurrentHashMap<String, ZooKeeper> connections = new ConcurrentHashMap<String, ZooKeeper>();
 
-    public static void connect(String host, String port) throws Exception {
+    public static ZooKeeper connect(String host, String port) throws Exception {
         String hostPort = host + ":" + port;
         if(connections.get(hostPort) != null) {
-            return;
+            return connections.get(hostPort);
         }
         ZooKeeper zooKeeper = new ZooKeeper(host + ":" + port, DEFAULT_TIME_OUT, null);
         connections.put(hostPort, zooKeeper);
+        return zooKeeper;
     }
 
     public static List<String> getChildNodes(String host, String port, String parentPath) throws Exception {
         String hostPort = host + ":" + port;
         ZooKeeper zooKeeper = connections.get(hostPort);
         if(zooKeeper == null) {
-            connect(host, port);
+            zooKeeper = connect(host, port);
         }
         List<String> list = zooKeeper.getChildren(parentPath, false);
         return list;
@@ -48,7 +49,7 @@ public class ZkDataService {
         String hostPort = host + ":" + port;
         ZooKeeper zooKeeper = connections.get(hostPort);
         if(zooKeeper == null) {
-            connect(host, port);
+            zooKeeper = connect(host, port);
         }
         List<String> list = zooKeeper.getChildren(parentPath, false);
         return list.size();
@@ -58,7 +59,7 @@ public class ZkDataService {
         String hostPort = host + ":" + port;
         ZooKeeper zooKeeper = connections.get(hostPort);
         if(zooKeeper == null) {
-            connect(host, port);
+            zooKeeper = connect(host, port);
         }
         Stat stat = zooKeeper.exists(path, null);
         byte[] data = zooKeeper.getData(path, false ,stat);
@@ -70,7 +71,7 @@ public class ZkDataService {
         String hostPort = host + ":" + port;
         ZooKeeper zooKeeper = connections.get(hostPort);
         if(zooKeeper == null) {
-            connect(host, port);
+            zooKeeper = connect(host, port);
         }
 
         Stat stat = zooKeeper.exists(path, null);
@@ -95,7 +96,7 @@ public class ZkDataService {
         String hostPort = host + ":" + port;
         ZooKeeper zooKeeper = connections.get(hostPort);
         if(zooKeeper == null) {
-            connect(host, port);
+            zooKeeper = connect(host, port);
         }
 
         Stat stat = zooKeeper.exists(path, null);
