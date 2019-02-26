@@ -28,6 +28,7 @@ public class GetNodesServlet extends HttpServlet {
         String host = req.getParameter("host");
         String port = req.getParameter("port");
         String path = req.getParameter("id");
+        String hasRoot = req.getParameter("hasRoot");
 
         if(host == null || port == null || "".equals(host) || "".equals(port)) {
             return;
@@ -45,7 +46,17 @@ public class GetNodesServlet extends HttpServlet {
                 int childrenCount = ZkDataService.getChildrenCount(host, port, nodeFullPath);
                 nodes.add(new TreeNode().setId(nodeFullPath).setText(zkNode).setState(childrenCount > 0 ? "closed" : "open"));
             }
-            String json = new Gson().toJson(nodes);
+
+            String json = "";
+            if("/".equals(path) && !"true".equals(hasRoot)) {
+                TreeNode root = new TreeNode().setId("/").setState("closed").setText("root");
+                root.setChildren(nodes);
+                List<TreeNode> rootList = new ArrayList<TreeNode>();
+                rootList.add(root);
+                json = new Gson().toJson(rootList);
+            } else {
+                json = new Gson().toJson(nodes);
+            }
             resp.getOutputStream().write(json.getBytes());
         } catch (Exception e) {
             e.printStackTrace();

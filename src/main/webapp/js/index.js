@@ -10,6 +10,10 @@ $(function () {
         onBeforeLoad: function(node, param) {
             param.host = host;
             param.port = port;
+
+            if(node != null && node.id == '/' && node.text == 'root') {
+                param.hasRoot='true';
+            }
         },
         onClick: function(node){
             $.post("nodeDetails",{id:node.id, host:host,port:port},function(rlt){
@@ -46,7 +50,9 @@ $(function () {
             });
         },
         onLoadSuccess:function (node, data) {
-
+            if(node == null) {
+                $('#nodes').tree('expand', $('#nodes').tree('find', '/').target);
+            }
         }
     });
 

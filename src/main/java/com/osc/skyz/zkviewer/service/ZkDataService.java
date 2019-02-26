@@ -78,7 +78,7 @@ public class ZkDataService {
 
         Stat stat = zooKeeper.exists(path, null);
         if(stat != null) {
-            zooKeeper.create(path + "/" + nodeName, nodeValue.getBytes("utf-8"),
+            zooKeeper.create(("/".equals(path) ? "" : path) + "/" + nodeName, nodeValue.getBytes("utf-8"),
                     ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.fromFlag(createMode));
         }
     }

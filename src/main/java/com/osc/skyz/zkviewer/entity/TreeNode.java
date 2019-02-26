@@ -1,5 +1,7 @@
 package com.osc.skyz.zkviewer.entity;
 
+import java.util.List;
+
 /**
  * 功能描述:
  * <p/>
@@ -15,6 +17,8 @@ public class TreeNode {
     private String text;
 
     private String state = "closed";
+
+    private List<TreeNode> children;
 
     public String getId() {
         return id;
@@ -40,6 +44,15 @@ public class TreeNode {
 
     public TreeNode setState(String state) {
         this.state = state;
+        return this;
+    }
+
+    public List<TreeNode> getChildren() {
+        return children;
+    }
+
+    public TreeNode setChildren(List<TreeNode> children) {
+        this.children = children;
         return this;
     }
 }
