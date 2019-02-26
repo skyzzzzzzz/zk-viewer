@@ -20,6 +20,23 @@
     <servlet-class>com.osc.skyz.zkviewer.web.ConnectServlet</servlet-class>
   </servlet>
 
+  <servlet>
+    <servlet-name>addNode</servlet-name>
+    <servlet-class>com.osc.skyz.zkviewer.web.AddNodeServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>removeNode</servlet-name>
+    <servlet-class>com.osc.skyz.zkviewer.web.RemoveNodeServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>updateNode</servlet-name>
+    <servlet-class>com.osc.skyz.zkviewer.web.UpdateNodeServlet</servlet-class>
+  </servlet>
+
+
+
   <servlet-mapping>
     <servlet-name>getNodes</servlet-name>
     <url-pattern>/nodes</url-pattern>
@@ -34,7 +51,22 @@
     <servlet-name>connect</servlet-name>
     <url-pattern>/connect</url-pattern>
   </servlet-mapping>
-  
+
+  <servlet-mapping>
+    <servlet-name>addNode</servlet-name>
+    <url-pattern>/addNode</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>removeNode</servlet-name>
+    <url-pattern>/removeNode</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>updateNode</servlet-name>
+    <url-pattern>/updateNode</url-pattern>
+  </servlet-mapping>
+
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>

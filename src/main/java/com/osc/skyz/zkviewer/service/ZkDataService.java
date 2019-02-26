@@ -2,6 +2,7 @@ package com.osc.skyz.zkviewer.service;
 
 import com.osc.skyz.zkviewer.entity.NodeAcl;
 import com.osc.skyz.zkviewer.entity.NodeMetaData;
+import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.ACL;
@@ -65,6 +66,47 @@ public class ZkDataService {
         byte[] data = zooKeeper.getData(path, false ,stat);
         data = data == null ? "".getBytes() : data;
         return new String(data,"utf-8");
+    }
+
+    public static void addNode(String host, String port, String path, String nodeName,
+                               String nodeValue, int createMode) throws Exception {
+        String hostPort = host + ":" + port;
+        ZooKeeper zooKeeper = connections.get(hostPort);
+        if (zooKeeper == null) {
+            zooKeeper = connect(host, port);
+        }
+
+        Stat stat = zooKeeper.exists(path, null);
+        if(stat != null) {
+            zooKeeper.create(path + "/" + nodeName, nodeValue.getBytes("utf-8"),
+                    ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.fromFlag(createMode));
+        }
+    }
+
+    public static void removeNode(String host, String port, String path, int version) throws Exception {
+        String hostPort = host + ":" + port;
+        ZooKeeper zooKeeper = connections.get(hostPort);
+        if (zooKeeper == null) {
+            zooKeeper = connect(host, port);
+        }
+
+        Stat stat = zooKeeper.exists(path, null);
+        if(stat != null) {
+            zooKeeper.delete(path, version);
+        }
+    }
+
+    public static void updateNodeData(String host, String port, String path, String data, int version) throws Exception {
+        String hostPort = host + ":" + port;
+        ZooKeeper zooKeeper = connections.get(hostPort);
+        if (zooKeeper == null) {
+            zooKeeper = connect(host, port);
+        }
+
+        Stat stat = zooKeeper.exists(path, null);
+        if(stat != null) {
+            zooKeeper.setData(path, data.getBytes("utf-8"), version);
+        }
     }
 
     public static NodeMetaData getNodeMetaData(String host, String port, String path) throws Exception {

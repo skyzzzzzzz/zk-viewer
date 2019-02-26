@@ -8,62 +8,8 @@
     <script type="text/javascript" src="easyui/jquery.min.js"></script>
     <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="js/index.js?v=1"></script>
     <script type="text/javascript">
-        var host = '';
-        var port = '';
-        $(function () {
-            port = $.cookie('port');
-            if(!port) {
-                port = 2181
-            }
-            $('#server').form('load', {host:$.cookie('host'), port:port});
-            $('#nodes').tree({
-                onBeforeLoad: function(node, param) {
-                    param.host = host;
-                    param.port = port;
-                },
-                onClick: function(node){
-                    $.post("nodeDetails",{id:node.id, host:host,port:port},function(rlt){
-                        $('#nodeData').form('load', {data:rlt.data});
-                        $('#metadata').form('load', rlt.metaData);
-
-                        var html = '';
-                        var acls = rlt.acls;
-                        for(var i = 0;i < acls.length;i++) {
-                            var acl = acls[i];
-                            html += '<tr>' +
-                                '<td>Schema:</td>' +
-                                '<td><input class="easyui-textbox" type="text" value="' + acl.schema + '"></input></td>' +
-                                '</tr>';
-                            html += '<tr>' +
-                                '<td>ID:</td>' +
-                                '<td><input class="easyui-textbox" type="text" value="' + acl.id + '"></input></td>' +
-                                '</tr>';
-                            html += '<tr>' +
-                                '<td>Permissions:</td>' +
-                                '<td><input class="easyui-textbox" type="text" value="' + acl.permissions + '"></input></td>' +
-                                '</tr>';
-                            $('#aclsTab').html(html);
-                            $.parser.parse($('#aclsTab'));
-                        }
-                    },"json");
-                }
-            });
-
-            connect();
-        });
-
-        function connect() {
-            host = $('#host').val();
-            port = $('#ports').val();
-            $.cookie('host', host, {expires: 365});
-            $.cookie('port', port, {expires: 365});
-            $.post("connect",{host:host, port: port},function(rlt) {
-                if('ok' == rlt) {
-                    $('#nodes').tree("reload");
-                }
-            });
-        }
     </script>
 </head>
 <body class="easyui-layout">
@@ -89,9 +35,18 @@
     </div>
     <div id="eastPanel" data-options="region:'center',split:false" title="Details" style="width:78%;height: 500px">
         <div class="easyui-tabs" data-options="border:false" style="width:100%;height:480px">
-            <div title="Node Data" style="padding:10px">
-                <form id="nodeData">
-                    <input class="easyui-textbox" name="data" data-options="multiline:true" style="height:370px;width: 100%"></input>
+            <div title="Node Data" style="padding:10px;width: 100%">
+                <form id="nodeData" style="width: 100%">
+                    <input class="easyui-textbox" id="nodeDataValue" name="data" data-options="multiline:true" style="height:360px;width: 100%"></input>
+                    <table style="width: 100%;padding-top: 4px">
+                        <tr>
+                            <td width="78%">
+                            </td>
+                            <td>
+                                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="updateData()" style="margin-left: 30px">Submit</a>
+                            </td>
+                        </tr>
+                    </table>
                 </form>
             </div>
             <div title="Node Metadata" style="padding:10px">
@@ -166,6 +121,42 @@
         <div style="width: 100%;vertical-align: middle;line-height: 40px;text-align: center;">
             <a href="https://gitee.com/skyz/zk-viewer" target="_blank">https://gitee.com/skyz/zk-viewer</a>&nbsp;/&nbsp;<a href="https://github.com/skyzzzzzzz/zk-viewer" target="_blank">https://github.com/skyzzzzzzz/zk-viewer</a>
         </div>
+    </div>
+    <div id="treeMenu" class="easyui-menu" style="width:120px;">
+        <div iconCls="icon-add" onclick="javascript:showAddNodeDlg()">Add</div>
+        <div iconCls="icon-remove" onclick="javascript:remove()">Remove</div>
+        <div iconCls="icon-reload" onclick="javascript:refresh()">Refresh</div>
+    </div>
+    <div id="addNodeDlg" class="easyui-dialog" title="Add Node" style="width:400px;height:200px;"
+         data-options="iconCls:'icon-save',resizable:true,modal:true,buttons:'#addNodeDlgBtns'" closed="true">
+        <table cellpadding="5" style="padding-top: 10px">
+            <tr>
+                <td width="18%"></td>
+                <td>Node Name:</td>
+                <td><input class="easyui-textbox" type="text" id="nodeName" editable="true" style="width: 155px"></input></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>Node Value:</td>
+                <td><input class="easyui-textbox" type="text" id="nodeValue" editable="true" style="width: 155px"></input></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>CreateMode:</td>
+                <td>
+                    <select class="easyui-combobox" data-options="panelHeight:140" id="createModel" name="createModel" style="width:100%">
+                        <option value="PERSISTENT" selected>PERSISTENT</option>
+                        <option value="PERSISTENT_SEQUENTIAL">PERSISTENT_SEQUENTIAL</option>
+                        <option value="EPHEMERAL">EPHEMERAL</option>
+                        <option value="EPHEMERAL_SEQUENTIAL">EPHEMERAL_SEQUENTIAL</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="addNodeDlgBtns">
+        <a href="#" class="easyui-linkbutton" onclick="addNode()">Submit</a>
+        <a href="#" class="easyui-linkbutton" onclick="$('#addNodeDlg').dialog('close')">Close</a>
     </div>
 </body>
 </html>
