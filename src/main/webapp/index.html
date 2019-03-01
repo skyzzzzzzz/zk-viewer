@@ -125,6 +125,8 @@
     <div id="treeMenu" class="easyui-menu" style="width:120px;">
         <div iconCls="icon-add" onclick="javascript:showAddNodeDlg()">Add</div>
         <div iconCls="icon-remove" onclick="javascript:remove()">Remove</div>
+        <div class="menu-sep"></div>
+        <div iconCls="icon-search" onclick="javascript:showFullpath()">Full path</div>
         <div iconCls="icon-reload" onclick="javascript:refresh()">Refresh</div>
     </div>
     <div id="addNodeDlg" class="easyui-dialog" title="Add Node" style="width:400px;height:200px;"
@@ -157,6 +159,12 @@
     <div id="addNodeDlgBtns">
         <a href="#" class="easyui-linkbutton" onclick="addNode()">Submit</a>
         <a href="#" class="easyui-linkbutton" onclick="$('#addNodeDlg').dialog('close')">Close</a>
+    </div>
+    <div id="fullpathDlg" class="easyui-dialog" title="Full path" style="width:400px;height:200px;"
+         data-options="iconCls:'icon-save',resizable:true,modal:true" closed="true">
+        <form id="fullpathForm">
+            <input class="easyui-textbox" name="fullpath" data-options="multiline:true" style="height:200px;width: 100%"></input>
+        </form>
     </div>
 </body>
 </html>
