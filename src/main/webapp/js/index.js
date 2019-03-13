@@ -53,12 +53,6 @@ $(function () {
             if(node == null) {
                 $('#nodes').tree('expand', $('#nodes').tree('find', '/').target);
             }
-        },
-        onClick:function (node) {
-            $(node.target).tooltip({
-                position: 'bottom',
-                content: '<span style="color: #222222;border: #666">' + node.id + '</span>'
-            });
         }
     });
 
