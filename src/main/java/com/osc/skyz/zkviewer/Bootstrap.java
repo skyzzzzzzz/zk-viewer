@@ -74,6 +74,10 @@ public class Bootstrap {
             File targetFile = new File(WEB_APP_ROOT_DIR);
             targetFile.mkdir();
 
+            // set read write privilege
+            targetFile.setReadable(true);
+            targetFile.setWritable(true);
+
             File jarFile = new File(jarPath);
             ZipInputStream zis = new ZipInputStream(new FileInputStream(jarFile));
             ZipEntry entry = null;
